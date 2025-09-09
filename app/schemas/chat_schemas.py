@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+import uuid
+from datetime import datetime
 
 
 class SessionCreate(BaseModel):
@@ -7,12 +9,10 @@ class SessionCreate(BaseModel):
 
 class SessionUpdate(BaseModel):
     name:str
-    user_id:uuid.UUID
 
 class SessionResponse(BaseModel):
     id:uuid.UUID
     name:str
-    user_id:uuid.UUID
     created_at:datetime
     updated_at:datetime
 

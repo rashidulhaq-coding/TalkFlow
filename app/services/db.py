@@ -1,11 +1,15 @@
 from app.core.config import config
 from sqlmodel import create_engine,text
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
+from contextlib import asynccontextmanager
 
-engine = AsyncEngine(
-    create_engine(config.DATABASE_URL,echo=True)
+# Create async engine
+engine = create_async_engine(
+    config.DATABASE_URL,
+    echo=True,
+    future=True
 )
 
 async_session = sessionmaker(
@@ -15,5 +19,13 @@ async_session = sessionmaker(
 )
 
 async def get_session() -> AsyncSession:
+    """Dependency to get an async database session."""
     async with async_session() as session:
-        yield session
+        try:
+            yield session
+            # await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

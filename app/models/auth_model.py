@@ -10,7 +10,10 @@ class Users(SQLModel, table=True):
     __tablename__="users"
     id:UUID=Field(sa_column=Column(pg.UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, server_default=text("gen_random_uuid()")))
     username:str=Field(sa_column=Column(pg.VARCHAR(50), nullable=False))
-    email:str=Field(sa_column=Column(pg.VARCHAR(100), nullable=False))
+    email:str=Field(sa_column=Column(pg.VARCHAR(100), nullable=False,unique=True))
     password:str=Field(sa_column=Column(pg.VARCHAR(255), nullable=False))
     created_at:datetime=Field(sa_column=Column(pg.TIMESTAMP(timezone=True), nullable=False,server_default=func.now()))
     updated_at:datetime=Field(sa_column=Column(pg.TIMESTAMP(timezone=True), nullable=False,server_default=func.now(), onupdate=func.now()))
+
+    def __repr__(self) -> str:
+        return f"{self.username} {self.email}"
